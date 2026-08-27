@@ -122,7 +122,7 @@ Soumyadeb Tripathy. The concept, visual identity, copy and components are origin
 
 ## Deployment
 
-Live at <https://proof-navy.vercel.app>.
+Live at <https://proof-navy.vercel.app> — repository: <https://github.com/ronitsaha11/portfolio>.
 
 Pushes to `main` deploy automatically via the Vercel GitHub integration.
 `src/data/site.ts` holds the canonical URL — change it there **before**
