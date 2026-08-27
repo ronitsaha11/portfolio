@@ -119,3 +119,12 @@ Structural patterns — the build-time evidence gate, the derived registry, the 
 layer, named motion verbs, SSR-truthful animation and the Lenis provider — are adapted with
 permission from [Rexy-5097/proof-of-work](https://github.com/Rexy-5097/proof-of-work) by
 Soumyadeb Tripathy. The concept, visual identity, copy and components are original.
+
+## Deployment
+
+Live at <https://proof-navy.vercel.app>.
+
+Pushes to `main` deploy automatically via the Vercel GitHub integration.
+`src/data/site.ts` holds the canonical URL — change it there **before**
+adding a custom domain, or the deployed pages will point search engines
+at an address that does not resolve.
