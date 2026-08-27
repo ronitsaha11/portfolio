@@ -1,0 +1,380 @@
+﻿@import "tailwindcss";
+
+/* ============================================================
+   GROUND TRUTH — design tokens (Phase 2 §03–§09)
+   Day pass is the default. Night pass is a second design,
+   not an inversion. Nothing below is set anywhere else.
+   ============================================================ */
+
+@theme {
+  /* fed by next/font in app/layout.tsx — self-hosted, no external request */
+  --font-display: var(--font-display-loaded), "Helvetica Neue", Arial, sans-serif;
+  --font-body: var(--font-body-loaded), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono-loaded), ui-monospace, "SF Mono", Consolas, monospace;
+
+  --text-legend: 0.66rem;
+  --text-micro: 0.7rem;
+  --text-data: 0.76rem;
+  --text-reading: 1.6rem;
+
+  --spacing-rail: 44px;
+  --spacing-page: clamp(1.1rem, 4vw, 3.5rem);
+}
+
+:root {
+  /* substrate — bone, the colour of a survey contact sheet */
+  --bg-0: #f3f2ed;
+  --bg-1: #fafaf7;
+  --bg-2: #eae9e2;
+  --bg-3: #ffffff;
+
+  /* ink — graphite with a green-grey bias, never pure black */
+  /* Every value below is measured against --bg-0 for WCAG AA at small
+     text (4.5:1). --ink-lo carries the 0.66rem legends, which is the
+     smallest type on the site, so it is the tightest constraint. */
+  --ink-hi: #14181a; /* 15.94:1 */
+  --ink-md: #4b5355; /* 7.02:1  */
+  --ink-lo: #656d6f; /* 4.72:1  */
+
+  /* line */
+  --line: rgba(20, 24, 26, 0.13);
+  --line-strong: rgba(20, 24, 26, 0.3);
+  --graticule: rgba(20, 24, 26, 0.055);
+
+  /* marker — the one accent. registration marks, active contour,
+     primary action, live link. nowhere else. */
+  /* 4.66:1 as link text on bone, and 5.22:1 for white on it as a button
+     ground — the brighter #D64A16 failed both at 3.86 and 4.33. */
+  --mark: #bf430e;
+  --mark-hi: #a63808;
+  --mark-dim: rgba(191, 67, 14, 0.1);
+  --mark-line: rgba(191, 67, 14, 0.34);
+  --mark-on: #ffffff;
+
+  /* elevation ramp — encodes a value or it does not appear */
+  --el-0: #0b5f5c;
+  --el-1: #3e8a6e;
+  --el-2: #8ca86a;
+  --el-3: #c9a24b;
+  --el-4: #b07a34;
+
+  /* state */
+  --measured: #0b5f5c; /* 6.68:1 */
+  --measured-bg: rgba(11, 95, 92, 0.1);
+  --attributed: #8a5e1f; /* 5.06:1 — #B07A34 failed at 3.30 */
+  --attributed-bg: rgba(138, 94, 31, 0.12);
+  --archived: #656d6f; /* 4.72:1 */
+  --archived-bg: rgba(101, 109, 111, 0.12);
+
+  /* depth — day light falls from above; shadows short and dry */
+  --lift-1: 0 1px 0 rgba(20, 24, 26, 0.05), 0 1px 2px rgba(20, 24, 26, 0.05);
+  --lift-2: 0 1px 0 rgba(20, 24, 26, 0.04), 0 10px 24px -14px rgba(20, 24, 26, 0.28);
+  --lift-3: 0 24px 60px -30px rgba(20, 24, 26, 0.42);
+  --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+
+  /* motion — five verbs (Phase 2 §07) */
+  --d-tick: 100ms;
+  --d-ui: 200ms;
+  --d-measure: 420ms;
+  --d-sweep: 700ms;
+  --d-pass: 1100ms;
+  --e-settle: cubic-bezier(0.16, 1, 0.3, 1);
+  --e-swap: cubic-bezier(0.65, 0, 0.35, 1);
+  --e-instr: cubic-bezier(0.4, 0, 0.1, 1);
+
+  /* layout */
+  --measure: 66ch;
+  --content-max: 1180px;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg-0: #0e1213;
+    --bg-1: #141a1b;
+    --bg-2: #1a2123;
+    --bg-3: #1f282a;
+    --ink-hi: #e8ebe8;
+    --ink-md: #a3adac;
+    --ink-lo: #7a8484; /* 4.90:1 on night ground */
+    --line: rgba(232, 235, 232, 0.14);
+    --line-strong: rgba(232, 235, 232, 0.3);
+    --graticule: rgba(232, 235, 232, 0.055);
+    --mark: #ff6b33;
+    --mark-hi: #ff8b5e;
+    --mark-dim: rgba(255, 107, 51, 0.13);
+    --mark-line: rgba(255, 107, 51, 0.4);
+    --mark-on: #14181a;
+    --el-0: #2fa9a2;
+    --el-1: #5fbe8e;
+    --el-2: #a8c77c;
+    --el-3: #e0bc5c;
+    --el-4: #d9954a;
+    --measured: #3fbfa6;
+    --measured-bg: rgba(63, 191, 166, 0.13);
+    --attributed: #e0ae5c;
+    --attributed-bg: rgba(224, 174, 92, 0.14);
+    --archived: #8a9493;
+    --archived-bg: rgba(138, 148, 147, 0.14);
+    --lift-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+    --lift-2: 0 1px 0 rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+    --lift-3: 0 28px 70px -32px rgba(0, 0, 0, 0.9);
+    --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg-0: #0e1213;
+  --bg-1: #141a1b;
+  --bg-2: #1a2123;
+  --bg-3: #1f282a;
+  --ink-hi: #e8ebe8;
+  --ink-md: #a3adac;
+  --ink-lo: #7a8484; /* 4.90:1 on night ground */
+  --line: rgba(232, 235, 232, 0.14);
+  --line-strong: rgba(232, 235, 232, 0.3);
+  --graticule: rgba(232, 235, 232, 0.055);
+  --mark: #ff6b33;
+  --mark-hi: #ff8b5e;
+  --mark-dim: rgba(255, 107, 51, 0.13);
+  --mark-line: rgba(255, 107, 51, 0.4);
+  --mark-on: #14181a;
+  --el-0: #2fa9a2;
+  --el-1: #5fbe8e;
+  --el-2: #a8c77c;
+  --el-3: #e0bc5c;
+  --el-4: #d9954a;
+  --measured: #3fbfa6;
+  --measured-bg: rgba(63, 191, 166, 0.13);
+  --attributed: #e0ae5c;
+  --attributed-bg: rgba(224, 174, 92, 0.14);
+  --archived: #8a9493;
+  --archived-bg: rgba(138, 148, 147, 0.14);
+  --lift-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --lift-2: 0 1px 0 rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+  --lift-3: 0 28px 70px -32px rgba(0, 0, 0, 0.9);
+  --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  color-scheme: dark;
+}
+
+/* Reduced motion zeroes durations at the token level, so a component
+   cannot opt out by accident (Phase 2 §07). */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --d-tick: 0ms;
+    --d-ui: 0ms;
+    --d-measure: 0ms;
+    --d-sweep: 0ms;
+    --d-pass: 0ms;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------- base ---------------- */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-0);
+  color: var(--ink-hi);
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* the graticule: the page is registered to a survey grid */
+  background-image:
+    linear-gradient(var(--graticule) 1px, transparent 1px),
+    linear-gradient(90deg, var(--graticule) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+::selection {
+  background: var(--mark);
+  color: var(--mark-on);
+}
+
+:focus-visible {
+  outline: 2px solid var(--mark);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+a {
+  color: var(--mark);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 1px;
+}
+
+img,
+svg,
+video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* ---------------- type roles (Phase 2 §04) ---------------- */
+
+.t-hero {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 96;
+  font-weight: 900;
+  font-size: clamp(2.6rem, 8vw, 5.6rem);
+  letter-spacing: -0.035em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.t-scene {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 84;
+  font-weight: 800;
+  font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+  letter-spacing: -0.03em;
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.t-section {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 108;
+  font-weight: 700;
+  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  letter-spacing: -0.012em;
+  line-height: 1.06;
+}
+
+.t-sub {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 104;
+  font-weight: 700;
+  font-size: 1.12rem;
+  letter-spacing: -0.004em;
+  line-height: 1.25;
+}
+
+/* wide + tiny = map legend. the width device. */
+.t-legend {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 125;
+  font-weight: 600;
+  font-size: var(--text-legend);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.t-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.measure {
+  max-width: var(--measure);
+}
+
+/* ---------------- the plate (Phase 2 §06) ---------------- */
+
+.plate {
+  position: relative;
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+  box-shadow: var(--lift-2), var(--inset-edge);
+}
+
+/* registration marks — the fiducials on an aerial survey frame */
+.plate::before,
+.plate::after {
+  content: "";
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  pointer-events: none;
+}
+
+.plate::before {
+  top: -1px;
+  left: -1px;
+  border-top: 1.5px solid var(--mark);
+  border-left: 1.5px solid var(--mark);
+}
+
+.plate::after {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 1.5px solid var(--mark);
+  border-right: 1.5px solid var(--mark);
+}
+
+/* ---------------- utilities ---------------- */
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  z-index: 200;
+  background: var(--mark);
+  color: var(--mark-on);
+  padding: 0.6rem 1rem;
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 112;
+  font-weight: 600;
+  font-size: 0.8rem;
+}
+
+.skip-link:focus {
+  left: 0.5rem;
+  top: 0.5rem;
+}
+
+/* PASS — the day/night terminator. The two frames are stacked rather
+   than cross-faded so the sweep reads as an edge crossing the page
+   instead of a dissolve. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(root) {
+  z-index: 1;
+}
+
+::view-transition-new(root) {
+  z-index: 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
+@keyframes gt-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
