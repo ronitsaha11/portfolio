@@ -14,7 +14,7 @@ export type SampleKind =
   | "code" // a file in a repository
   | "commit" // a specific commit or range
   | "api" // a GitHub REST response
-  | "ci" // a workflow definition
+  | "ci" // a workflow definition or run
   | "doc" // a README, ADR or specification
   | "deploy" // a live deployment
   | "cert"; // a certification record
@@ -48,8 +48,17 @@ export interface Reading {
   samples: Sample[];
 }
 
+export type SceneLinkLabel =
+  | "REPOSITORY"
+  | "LIVE"
+  | "SPECIFICATION"
+  | "COMMITS"
+  | "DOCUMENTATION"
+  | "BENCHMARK"
+  | "ROADMAP";
+
 export interface SceneLink {
-  label: "REPOSITORY" | "LIVE" | "SPECIFICATION" | "COMMITS";
+  label: SceneLinkLabel;
   href: string;
 }
 
@@ -72,13 +81,64 @@ export interface ArchitectureLayer {
   depth: 0 | 1 | 2 | 3 | 4;
 }
 
+/**
+ * Which lattice formation a scene owns.
+ *
+ * The single WebGL scene behind the page morphs between these as you
+ * scroll, so a scene's formation is data rather than a hard-coded branch
+ * inside the renderer. Adding a scene with `formation: "stack"` gets the
+ * layer-stack treatment with no change to the 3D code at all.
+ *
+ *   stack       layers a request descends through
+ *   pipeline    an ordered chain with a boundary partway along it
+ *   crossstack  tiers joined by edges that cross a language boundary
+ *   orbit       a core with satellites around it
+ *   ledger      rows of durable records that survive a restart
+ *   mesh        peers coordinating without a centre
+ */
+export type Formation = "stack" | "pipeline" | "crossstack" | "orbit" | "ledger" | "mesh";
+
+/**
+ * A scene's own visual identity.
+ *
+ * Every project reads differently because the system it describes is
+ * different — not because the card was given another hue. `formation`
+ * decides the 3D behaviour, `nodes` and `edges` its density, and
+ * `stages` is the semantic fallback: the same structure as prose, always
+ * present in the DOM whether or not WebGL ever loads.
+ */
+export interface SceneSignature {
+  formation: Formation;
+  /** Elevation-ramp index the scene's accents are drawn from. */
+  ramp: 0 | 1 | 2 | 3 | 4;
+  /** Node count at desktop density. Halved on mobile. */
+  nodes: number;
+  /**
+   * The accessible reading of the 3D scene. Rendered as an ordered list
+   * beside the canvas — never hidden, never a replacement shown only
+   * when WebGL fails.
+   */
+  stages: { id: string; label: string; note: string; boundary?: boolean }[];
+}
+
+/** Where a project sits in the hierarchy. Composition follows from this. */
+export type Tier = "flagship" | "supporting";
+
 export interface Scene {
   slug: string;
   /** Scene number in the survey, 1-based. */
   sceneNumber: number;
   name: string;
   subtitle: string;
+  /** One or two words. Drives the index filter chips. */
+  category: string;
+  tier: Tier;
   oneLiner: string;
+  /**
+   * Where the project actually is, in its own words. Never "complete"
+   * unless the repository says so.
+   */
+  status: string;
   /** The problem, stated before any solution. */
   problem: string;
   /** The single invariant the system had to hold. */
@@ -91,8 +151,14 @@ export interface Scene {
   limitation: string;
   /** Ownership, in Ronit's own words. Non-negotiable on team work. */
   ownership: string;
+  /**
+   * What specifically is his, where ownership is partial. Omitted when
+   * `ownership` already says "sole author" and there is nothing to split.
+   */
+  contribution?: string[];
   stack: string[];
   layers: ArchitectureLayer[];
+  signature: SceneSignature;
   readings: Reading[];
   decisions: DecisionRecord[];
   links: SceneLink[];

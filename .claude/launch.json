@@ -7,6 +7,13 @@
       "runtimeArgs": ["dev"],
       "port": 3000,
       "autoPort": true
+    },
+    {
+      "name": "ground-truth-prod",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["start", "--port", "3100"],
+      "port": 3100,
+      "autoPort": true
     }
   ]
 }

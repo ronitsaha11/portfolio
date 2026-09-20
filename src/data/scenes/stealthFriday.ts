@@ -1,15 +1,21 @@
 import type { Scene } from "../types";
 
 const REPO = "https://github.com/ronitsaha11/Stealth-FRIDAY";
-const M = "2026-08-27";
+const M = "2026-09-20";
 
 export const stealthFriday: Scene = {
   slug: "stealth-friday",
-  sceneNumber: 3,
+  sceneNumber: 4,
   name: "Stealth F.R.I.D.A.Y",
   subtitle: "Local-first voice agent · dashboard and automation layer",
+  category: "Agents · Local-first",
+  tier: "supporting",
   oneLiner:
     "A voice agent that runs entirely on your own machine, with a real-time dashboard streaming its state over WebSocket and an automation layer that lets it act on the system.",
+
+  status:
+    "Runs locally. Four commits, so the repository shows the result rather than the process, and the agent core is a shared codebase rather than mine."
+,
 
   problem:
     "A voice assistant that ships every utterance to a cloud API is a privacy decision disguised as an architecture decision. Running the whole pipeline locally — wake word, transcription, planning, execution, speech — removes that, but replaces it with a harder problem: a long-running local process has no interface, so when it misbehaves there is nothing to look at.",
@@ -80,6 +86,19 @@ export const stealthFriday: Scene = {
       depth: 0,
     },
   ],
+
+  signature: {
+    formation: "orbit",
+    ramp: 1,
+    nodes: 120,
+    stages: [
+      { id: "core", label: "Agent core", note: "Shared, not mine. Wake listener, planner, executor and the WebSocket bridge." },
+      { id: "bridge", label: "State bridge", note: "Every message is a full snapshot, never a delta.", boundary: true },
+      { id: "dash", label: "Dashboard", note: "Mine. Live state, last command, active module and health." },
+      { id: "routes", label: "Control API", note: "Mine. Start the agent, read its status, mint a session token." },
+      { id: "automation", label: "Automation tools", note: "Mine. Browser, network and system tools in the dispatch table." },
+    ],
+  },
 
   readings: [
     {

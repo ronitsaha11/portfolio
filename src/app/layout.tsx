@@ -2,11 +2,11 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import { MotionPrefsProvider } from "@/components/providers/MotionPrefsProvider";
 import { LenisProvider } from "@/components/providers/LenisProvider";
-import { ThemeProvider } from "@/components/providers/ThemeProvider";
 import { site } from "@/data/site";
+import { scenes } from "@/data/scenes";
 import "./globals.css";
 
-/* Three voices (Phase 2 §04). Self-hosted by next/font, so no external
+/* Three voices, self-hosted by next/font, so there is no external
    request and no layout shift from a late webfont. */
 /* No `weight` here on purpose: requesting the wdth axis requires the
    variable font, which ships the full 100–900 weight range with it —
@@ -24,9 +24,13 @@ const instrument = Instrument_Sans({
   display: "swap",
 });
 
+/* Two weights, not three. Each static weight is its own ~10 KB
+   preloaded file, and 600 was carrying four labels that 500 renders
+   indistinguishably at 0.7–0.8rem. The variable Archivo above is the
+   one font that genuinely needs its full axis range. */
 const plexMono = IBM_Plex_Mono({
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["400", "500"],
   variable: "--font-mono-loaded",
   display: "swap",
 });
@@ -38,18 +42,27 @@ export const metadata: Metadata = {
     template: `%s — ${site.name}`,
   },
   description: site.description,
+  applicationName: site.concept,
   authors: [{ name: site.name, url: site.github }],
   creator: site.name,
+  /* The technologies and domains that actually appear in the work,
+     which is also the list a recruiter would search. No keyword
+     stuffing: every term below is a thing on this page. */
   keywords: [
     "Ronit Saha",
+    "full-stack engineer",
+    "systems engineer",
     "backend engineer",
+    "static analysis",
+    "privacy engineering",
     "geospatial",
+    "Rust",
     "FastAPI",
-    "Android",
-    "Kotlin",
     "TypeScript",
+    "Kotlin",
     "portfolio",
   ],
+  category: "technology",
   openGraph: {
     type: "profile",
     title: site.title,
@@ -71,57 +84,92 @@ export const metadata: Metadata = {
   alternates: { canonical: site.url },
 };
 
+/* One palette, so one theme colour and no pre-paint script to stamp a
+   stored choice. Removing the light pass removed a class of bug with
+   it: there is no longer a window in which the browser chrome and the
+   page disagree about which ground they are on. */
 export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#F3F2ED" },
-    { media: "(prefers-color-scheme: dark)", color: "#0E1213" },
-  ],
+  themeColor: "#0B0E0F",
+  colorScheme: "dark",
 };
 
-/* Applies the stored pass before first paint, so an explicit night-pass
-   choice never flashes the day palette. */
-/* Stamps the pass before first paint: a stored choice if there is one,
-   otherwise the OS preference. Without the OS fallback a dark-OS visitor
-   flashes the day palette before the provider mounts. */
-const passScript = `(function(){try{var p=localStorage.getItem("gt-pass");if(p!=="light"&&p!=="dark"){p=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light"}document.documentElement.setAttribute("data-theme",p)}catch(e){}})()`;
-
+/**
+ * Structured data.
+ *
+ * A Person, plus one CreativeWork per system. The `about` list is
+ * derived from the scene data rather than written out, so a project
+ * added to `src/data/scenes` appears in the structured data, the
+ * sitemap, the navigation and the command palette without anyone
+ * remembering to update four places.
+ */
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "Person",
-  name: site.name,
-  email: site.email,
-  url: site.url,
-  jobTitle: site.role,
-  sameAs: [site.github, site.linkedin],
-  alumniOf: { "@type": "CollegeOrUniversity", name: "Lovely Professional University" },
-  address: { "@type": "PostalAddress", addressLocality: "Jalandhar", addressCountry: "IN" },
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${site.url}#person`,
+      name: site.name,
+      email: site.email,
+      url: site.url,
+      jobTitle: site.role,
+      description: site.description,
+      knowsAbout: site.disciplines,
+      sameAs: [site.github, site.linkedin],
+      alumniOf: { "@type": "CollegeOrUniversity", name: "Lovely Professional University" },
+      address: { "@type": "PostalAddress", addressLocality: "Jalandhar", addressCountry: "IN" },
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": `${site.url}#page`,
+      name: site.title,
+      description: site.description,
+      url: site.url,
+      mainEntity: { "@id": `${site.url}#person` },
+      about: scenes.map((s) => ({
+        "@type": "SoftwareSourceCode",
+        name: s.name,
+        description: s.oneLiner,
+        codeRepository: s.links.find((l) => l.label === "REPOSITORY")?.href,
+        programmingLanguage: s.stack.slice(0, 4),
+        author: { "@id": `${site.url}#person` },
+      })),
+    },
+  ],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html
-      lang="en"
-      className={`${archivo.variable} ${instrument.variable} ${plexMono.variable}`}
-      suppressHydrationWarning
-    >
+    <html lang="en" className={`${archivo.variable} ${instrument.variable} ${plexMono.variable}`}>
       {/* No explicit <head> element: rendering one in an App Router
           layout suppresses the entire Metadata API output — no
-          description, no Open Graph, no canonical. The scripts below sit
-          at the top of <body> instead, where the pass script still runs
-          before any content paints. */}
+          description, no Open Graph, no canonical. The JSON-LD below
+          sits at the top of <body> instead. */}
       <body>
-        <script dangerouslySetInnerHTML={{ __html: passScript }} />
+        {/* THE MOTION FLAG, SET BEFORE THE FIRST PAINT.
+            Four lines, inline, synchronous, ahead of any stylesheet
+            that reads it. It is what decides whether a case study is
+            a pinned scrollytelling frame or an ordinary document, and
+            deciding it here rather than in a React effect is worth
+            about 1.9 seconds of total blocking time: a mode flip
+            after hydration rebuilds and re-lays-out every case study
+            on the page. No JavaScript and no attribute means the
+            document layout, which is the correct fallback. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches)" +
+              "document.documentElement.dataset.motion='on'}catch(e){}",
+          }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
-        <a href="#position" className="skip-link">
+        <a href="#top" className="skip-link">
           Skip to content
         </a>
         <MotionPrefsProvider>
-          <ThemeProvider>
-            <LenisProvider>{children}</LenisProvider>
-          </ThemeProvider>
+          <LenisProvider>{children}</LenisProvider>
         </MotionPrefsProvider>
       </body>
     </html>

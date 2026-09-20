@@ -2,15 +2,21 @@ import type { Scene } from "../types";
 
 const REPO = "https://github.com/ronitsaha11/HealthTrack";
 const BLOB = `${REPO}/blob/master/app/src/main/java/com/healthtrack`;
-const M = "2026-08-27";
+const M = "2026-09-20";
 
 export const healthtrack: Scene = {
   slug: "healthtrack",
-  sceneNumber: 2,
+  sceneNumber: 5,
   name: "HealthTrack",
   subtitle: "Android health and medication tracking",
+  category: "Android · Reliability",
+  tier: "supporting",
   oneLiner:
     "A reminder that fires late is a reminder that failed. Built so scheduling survives reboots, timezone shifts and clock changes.",
+
+  status:
+    "Builds and runs. There is no test source set, which for an app whose argument is reliability is the first thing worth fixing."
+,
 
   problem:
     "A medication reminder is not a notification feature. If the phone reboots, the user changes timezone, or the system clock is adjusted, every pending alarm on Android is silently discarded. The app that treats reminders as UI state loses them, and the user does not find out until the dose is missed.",
@@ -76,6 +82,24 @@ export const healthtrack: Scene = {
       depth: 0,
     },
   ],
+
+  signature: {
+    formation: "ledger",
+    ramp: 4,
+    nodes: 150,
+    stages: [
+      { id: "presentation", label: "Presentation", note: "Compose screens and view models. No scheduling logic, no persistence." },
+      { id: "domain", label: "Domain", note: "Use cases and the reminder state machine. No Android imports at all." },
+      {
+        id: "scheduling",
+        label: "Scheduling",
+        note: "Receivers enqueue; they never do the work. The OS is obliged to finish what WorkManager started.",
+        boundary: true,
+      },
+      { id: "data", label: "Data", note: "Room is the source of truth. Firestore workers reconcile it; they never own it." },
+      { id: "reboot", label: "After a reboot", note: "Android discards every pending alarm. The worker recomputes the full schedule rather than diffing against a belief that is no longer true." },
+    ],
+  },
 
   readings: [
     {

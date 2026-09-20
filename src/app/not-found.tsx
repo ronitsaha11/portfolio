@@ -6,14 +6,15 @@ export default function NotFound() {
       <p className="t-legend m-0" style={{ color: "var(--mark)" }}>
         No sample at this coordinate
       </p>
-      <h1 className="t-hero mt-4 mb-0" style={{ color: "var(--ink-hi)" }}>
+      <h1 className="t-display mt-5 mb-0" style={{ color: "var(--ink-hi)" }}>
         404
       </h1>
-      <p className="measure mt-5 text-[1.05rem]" style={{ color: "var(--ink-md)" }}>
-        The page you asked for is not part of this survey.
+      <p className="measure mt-6 text-[1.05rem]" style={{ color: "var(--ink-md)" }}>
+        The page you asked for is not part of this survey. Everything on this site lives on one
+        document, so the way back is the way in.
       </p>
-      <p className="mt-4">
-        <Link href="/" className="t-mono text-[0.85rem]">
+      <p className="mt-5">
+        <Link href="/" className="t-mono text-[0.86rem]">
           ← Return to the survey
         </Link>
       </p>

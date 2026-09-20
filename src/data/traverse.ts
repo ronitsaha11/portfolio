@@ -43,7 +43,7 @@ export const traverse: Station[] = [
     date: "Jul 2026",
     title: "TerraMind AI",
     detail:
-      "Five days, 90 commits, sole author. Specification-first, phase-tracked, CI-gated. The current high-water mark.",
+      "Five days and 90 commits to the first cut, sole author; 116 now, with ruff, mypy and pytest gating every push since August. Specification-first and phase-tracked.",
     depth: 4,
   },
   {
@@ -52,5 +52,19 @@ export const traverse: Station[] = [
     detail:
       "Built in public. Its own source is linked in the colophon, and the build fails if a number here loses its sample.",
     depth: 3,
+  },
+  {
+    date: "Aug–Sep 2026",
+    title: "Cartograph",
+    detail:
+      "Six milestones inside a Rust architecture engine someone else started: the desktop app, blast radius, structural diff, the GitHub reviewer, the MCP server and the AI boundary. The first codebase where the review was as much of the work as the code.",
+    depth: 4,
+  },
+  {
+    date: "Sep 2026",
+    title: "PratiBimb",
+    detail:
+      "Smart India Hackathon, ISRO problem statement 26171. A two-person team with a frozen constitution, twenty-five security invariants and a spike protocol that pre-registers its accept criteria — including the one that invalidated our own test plan.",
+    depth: 4,
   },
 ];

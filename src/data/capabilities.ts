@@ -7,6 +7,8 @@ const HT = "https://github.com/ronitsaha11/HealthTrack/blob/master/app/src/main/
 const ES = "https://github.com/Somnath29/EcoShare/blob/main";
 const SF = "https://github.com/ronitsaha11/Stealth-FRIDAY/blob/main";
 const EB = "https://github.com/ronitsaha11/ecobites-food-waste-management/blob/main/backend/src/main/java/com/foodwaste/app";
+const CG = "https://github.com/Rexy-5097/cartograph";
+const PB = "https://github.com/ronitsaha11/pratibimb";
 
 /**
  * Only technologies that appear in code Ronit wrote. Every item links to
@@ -29,7 +31,7 @@ export const capabilities: Capability[] = [
     group: "Architecture",
     items: [
       { name: "Provider registry", note: "pluggable models", href: `${TMB}/ai/registry.py` },
-      { name: "Adapter boundary", note: "renderer-independent", href: `${TMF}/features/rendering/RendererAdapter.ts` },
+      { name: "Adapter boundary", note: "renderer-independent", href: `${TMF}/core/datasets/contracts/renderer.interface.ts` },
       { name: "Clean Architecture", note: "data / domain / ui", href: `${HT}/domain/repository/ReminderRepository.kt` },
       { name: "State machine", note: "reminder lifecycle", href: `${HT}/domain/statemachine/ReminderStateMachine.kt` },
       { name: "Audit + lineage", note: "provenance as a model", href: `${TMB}/db/models/lineage_record.py` },
@@ -39,14 +41,14 @@ export const capabilities: Capability[] = [
   {
     group: "Geospatial & ML",
     items: [
-      { name: "deck.gl 9", note: "globe layers", href: `${TMF}/features/rendering/layers/GlobeLayerFactory.ts` },
+      { name: "deck.gl overlay", note: "on a MapLibre globe", href: `${TMF}/features/earth/services/DeckOverlayManager.ts` },
       { name: "STAC / Earth Search", note: "scene discovery", href: `${TMB}/providers/catalog/earth_search.py` },
       { name: "TiTiler + COG", note: "tile serving", href: `${TMB}/providers/tiles/titiler.py` },
       { name: "NDVI / NDWI", note: "own index engine", href: `${TMB}/analytics/indices/ndvi.py` },
       { name: "SegFormer", note: "segmentation provider", href: `${TMB}/ai/providers/segformer.py` },
       { name: "Raster polygonisation", note: "mask → GeoJSON", href: `${TMB}/geospatial/polygonizer.py` },
-      { name: "DEM elevation", note: "terrain decoding", href: `${TMF}/features/terrain/ElevationDecoder.ts` },
-      { name: "Ephemeris", note: "real sun position", href: `${TMF}/core/planet/EarthEphemeris.ts` },
+      { name: "Terrain config", note: "DEM source and exaggeration", href: `${TMF}/features/earth/config/terrain.config.ts` },
+      { name: "Projection service", note: "globe / mercator switch", href: `${TMF}/features/earth/services/ProjectionService.ts` },
     ],
   },
   {
@@ -74,12 +76,34 @@ export const capabilities: Capability[] = [
     ],
   },
   {
-    group: "Performance",
+    group: "Rendering & interaction",
     items: [
-      { name: "Adaptive governor", note: "quality, not frames", href: `${TMF}/features/performance/PerformanceEngine.ts` },
-      { name: "Hysteresis model", note: "no oscillation", href: `${TMF}/features/performance/models/HysteresisModel.ts` },
-      { name: "Streaming cache", note: "tile eviction policy", href: `${TMF}/features/streaming/StreamingEngine.ts` },
+      { name: "Layer lifecycle", note: "add / update / dispose", href: `${TMF}/features/earth/services/layer-lifecycle-manager.ts` },
+      { name: "Style compiler", note: "expressions to MapLibre", href: `${TMF}/features/earth/services/style-expression-compiler.ts` },
+      { name: "Viewport queries", note: "spatial query controller", href: `${TMF}/features/earth/services/viewport-query-controller.ts` },
       { name: "FPS tracking", note: "rolling average", href: `${TMF}/features/earth/services/FPSTracker.ts` },
+    ],
+  },
+  {
+    group: "Rust & static analysis",
+    items: [
+      { name: "Tauri v2", note: "desktop shell, M11", href: `${CG}/tree/main/desktop/src-tauri` },
+      { name: "petgraph traversal", note: "blast radius, M12", href: `${CG}/tree/main/crates/cartograph-graph` },
+      { name: "Structural diff", note: "branch vs branch, M13", href: `${CG}/tree/main/crates/cartograph-graph` },
+      { name: "Model Context Protocol", note: "stdio server, M15", href: `${CG}/tree/main/crates/cartograph-mcp` },
+      { name: "Sigma / Graphology", note: "graph renderer", href: `${CG}/blob/main/desktop/src/GraphView.tsx` },
+      { name: "Evidence bundles", note: "the ASK boundary, M16", href: `${CG}/tree/main/crates/cartograph-ask` },
+    ],
+  },
+  {
+    group: "Privacy & on-device ML",
+    items: [
+      { name: "Security invariants", note: "25, frozen, ADR-gated", href: `${PB}/blob/main/docs/security/security-invariants.md` },
+      { name: "Threat modelling", note: "four adversaries, scoped", href: `${PB}/blob/main/docs/security/threat-model.md` },
+      { name: "Redaction manifest", note: "typed placeholders, v1.1", href: `${PB}/blob/main/docs/architecture/manifest-schema.md` },
+      { name: "ONNX Runtime Web", note: "hash-pinned wasm asset", href: `${PB}/blob/main/packages/security/src/ortRuntimePin.ts` },
+      { name: "Chrome MV3", note: "offscreen inference host", href: `${PB}/tree/main/apps/extension` },
+      { name: "Evaluation harness", note: "built week two, not six", href: `${PB}/tree/main/packages/evaluation` },
     ],
   },
   {
@@ -91,6 +115,10 @@ export const capabilities: Capability[] = [
       { name: "pytest", note: "~50 modules", href: `${TM}/tree/main/apps/backend/tests` },
       { name: "Docker Compose", note: "Postgres + Redis", href: `${TM}/blob/main/docker-compose.yml` },
       { name: "Vercel", note: "SPA routing", href: `${ES}/frontend/vercel.json` },
+      { name: "Vitest", note: "806 tests, two machines", href: `${PB}/blob/main/vitest.config.ts` },
+      { name: "Quality gates", note: "QG-01..06, signed or not", href: `${PB}/tree/main/agentos/gates` },
+      { name: "Pre-registered spikes", note: "criteria before data", href: `${PB}/tree/main/artifacts/experiments` },
+      { name: "clippy -D warnings", note: "the same gates CI runs", href: `${CG}/blob/main/Makefile` },
     ],
   },
 ];

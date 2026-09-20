@@ -1,40 +1,42 @@
-﻿import { Section } from "@/components/layout/Section";
-import { Depth3D } from "@/components/primitives/Depth3D";
-import { StaggerGrid, StaggerCell } from "@/components/primitives/StaggerGrid";
-import { Tilt3D } from "@/components/primitives/Tilt3D";
+"use client";
+
+import { Chapter } from "@/components/layout/Chapter";
+import { Stagger } from "@/components/primitives/Stagger";
 import { Legend } from "@/components/primitives/Legend";
 import { principles } from "@/data/principles";
 
 export function Method() {
   return (
-    <Section
+    <Chapter
       id="method"
-      station="07"
+      station="10"
       title="Method"
-      lede="Four principles, each with the artifact that proves it. These are not aspirations — every one is visible in a commit history someone else can read."
+      lede="Four principles, each with the artifact that proves it. These are not aspirations — every one is visible in a commit history someone else can read, and one of them is about recording the results that went against me."
     >
-      
-      <StaggerGrid className="grid gap-px lg:grid-cols-2" stagger={0.07} flat>
+      <Stagger className="grid-hair lg:grid-cols-2" depth>
         {principles.map((p, i) => (
-          <StaggerCell key={p.id} flat><Depth3D side={i % 2 === 0 ? "left" : "right"} intensity={1.2}>
-            <Tilt3D className="h-full">
-            <div
-              className="h-full px-5 py-5"
-              style={{ background: "var(--bg-1)", border: "1px solid var(--line)" }}
-            >
-              <Legend className="mb-2 block">{String(i + 1).padStart(2, "0")}</Legend>
-              <h3 className="t-sub mt-0 mb-2">{p.title}</h3>
-              <p className="mb-4 text-[0.94rem]" style={{ color: "var(--ink-md)" }}>
-                {p.body}
-              </p>
-              <ul className="m-0 flex list-none flex-wrap gap-x-4 gap-y-1 p-0">
+          <div key={p.id} data-cell="" className="flex h-full flex-col px-6 py-6">
+            <div className="mb-3 flex items-baseline gap-3">
+              <span className="t-mono text-[0.78rem]" style={{ color: "var(--mark)" }}>
+                {String(i + 1).padStart(2, "0")}
+              </span>
+              <h3 className="t-sub m-0 flex-1">{p.title}</h3>
+            </div>
+
+            <p className="mb-5 flex-1 text-[0.95rem] leading-[1.55]" style={{ color: "var(--ink-md)" }}>
+              {p.body}
+            </p>
+
+            <div>
+              <Legend className="mb-2 block">Proven by</Legend>
+              <ul className="m-0 flex list-none flex-col gap-1 p-0">
                 {p.provenBy.map((x) => (
                   <li key={x.href}>
                     <a
                       href={x.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="t-mono text-[0.7rem] no-underline hover:underline"
+                      className="t-mono text-[0.72rem] no-underline hover:underline"
                     >
                       {x.label} ↗
                     </a>
@@ -42,11 +44,9 @@ export function Method() {
                 ))}
               </ul>
             </div>
-            </Tilt3D></Depth3D>
-          </StaggerCell>
+          </div>
         ))}
-      </StaggerGrid>
-      
-    </Section>
+      </Stagger>
+    </Chapter>
   );
 }

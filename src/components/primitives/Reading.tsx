@@ -2,8 +2,9 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import * as Popover from "@radix-ui/react-popover";
+import { animate, utils } from "animejs";
 import { cn } from "@/lib/cn";
-import { DUR } from "@/lib/motion";
+import { measure as measureVerb } from "@/lib/motion";
 import { splitReadingValue, formatCount } from "@/lib/format";
 import { useInViewOnce } from "@/hooks/useInViewOnce";
 import { useMotionPrefs } from "@/components/providers/MotionPrefsProvider";
@@ -14,20 +15,23 @@ import type { Reading as ReadingData, Confidence } from "@/data/types";
  * The signature component.
  *
  * A reading is a measured figure with a confidence interval under it.
- * Server-renders in its final, settled state — a visitor with no JS sees
- * the number and its true interval. With motion enabled it runs the
- * MEASURE lifecycle once on first view: the value counts up while the
- * interval sweeps inward from full width to its real width.
+ * It server-renders in its final, settled state — a visitor with no
+ * JavaScript sees the number and its true interval. With motion on it
+ * runs the MEASURE verb once on first view: the value counts up while
+ * the interval sweeps inward from full width to its real width.
  *
- * The interval width is the honest part. "measured" narrows to tight,
+ * THE INTERVAL IS THE HONEST PART. "measured" narrows to tight;
  * "attributed" stays visibly wide, because partial ownership of a team
  * codebase is a wider measurement than sole authorship of your own.
+ * Most of the recent work on this site is attributed, and the intervals
+ * say so before the prose does.
  *
- * Performance: the Radix popover is ARMED, not mounted, on first render.
- * Nineteen popover roots hydrating on load cost more main-thread time
- * than every animation on the page combined; instead the plain button
- * hydrates, and the popover is constructed on the first hover, focus or
- * tap — none of which can happen before hydration finishes anyway.
+ * PERFORMANCE. The Radix popover is ARMED, not mounted, on first
+ * render. Twenty-odd popover roots hydrating on load cost more
+ * main-thread time than every animation on the page combined; instead
+ * the plain button hydrates, and the popover is constructed on the
+ * first hover, focus or tap — none of which can happen before
+ * hydration finishes anyway.
  */
 
 const intervalByConfidence: Record<Confidence, { left: string; right: string }> = {
@@ -51,7 +55,7 @@ export function Reading({
   size?: "md" | "lg";
   className?: string;
 }) {
-  const { animate } = useMotionPrefs();
+  const { animate: allowed } = useMotionPrefs();
   const [ref, inView] = useInViewOnce<HTMLSpanElement>(0.4);
 
   const parts = useMemo(() => splitReadingValue(reading.value), [reading.value]);
@@ -65,18 +69,26 @@ export function Reading({
   const restoreFocus = useRef(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Arm only after mount, and only when motion is allowed — SSR output
-  // and the reduced-motion render both stay in the final state.
+  // Drop to zero only after mount, and only when motion is allowed, so
+  // the SSR output and the reduced-motion render both stay final.
   useEffect(() => {
-    if (animate && !hasRun.current && !inView && parts) {
+    if (allowed && !hasRun.current && !inView && parts) {
       setDisplay(`${parts.prefix}${formatCount(0, parts.decimals)}${parts.suffix}`);
       setSettled(false);
     }
-  }, [animate, inView, parts]);
+  }, [allowed, inView, parts]);
 
-  // MEASURE: count the leading number up, then settle.
+  /**
+   * MEASURE — count the leading number up, then settle.
+   *
+   * anime.js drives a plain object here rather than a DOM property,
+   * because the displayed string has a prefix and a suffix ("8 / 50")
+   * and only the middle is a number. Tweening the number and formatting
+   * it on update is the whole reason the animation library is allowed
+   * to touch React state at all.
+   */
   useEffect(() => {
-    if (!inView || hasRun.current || !animate) return;
+    if (!inView || hasRun.current || !allowed) return;
     hasRun.current = true;
 
     if (!parts) {
@@ -84,25 +96,26 @@ export function Reading({
       return;
     }
 
-    const start = performance.now();
-    const ms = DUR.measure * 1000;
-    let raf = 0;
-
-    const tick = (now: number) => {
-      const t = Math.min((now - start) / ms, 1);
-      const eased = 1 - Math.pow(1 - t, 3);
-      setDisplay(`${parts.prefix}${formatCount(parts.num * eased, parts.decimals)}${parts.suffix}`);
-      if (t < 1) {
-        raf = requestAnimationFrame(tick);
-      } else {
+    const counter = { v: 0 };
+    const anim = animate(counter, {
+      v: parts.num,
+      ...measureVerb(),
+      onUpdate: () => {
+        setDisplay(
+          `${parts.prefix}${formatCount(counter.v, parts.decimals)}${parts.suffix}`,
+        );
+      },
+      onComplete: () => {
         setDisplay(reading.value);
         setSettled(true);
-      }
-    };
+      },
+    });
 
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [inView, animate, parts, reading.value]);
+    return () => {
+      anim.revert();
+      utils.set(counter, { v: parts.num });
+    };
+  }, [inView, allowed, parts, reading.value]);
 
   // Arming swaps a plain <button> for a Popover.Trigger, which remounts
   // the node. If we armed from the keyboard, put focus back.
@@ -121,8 +134,8 @@ export function Reading({
       <span
         ref={ref}
         className={cn(
-          "t-mono font-semibold leading-none transition-colors",
-          size === "lg" ? "text-[2.1rem] md:text-[2.6rem]" : "text-[1.6rem]",
+          "t-mono leading-none font-medium transition-colors",
+          size === "lg" ? "text-[2.3rem] md:text-[3rem]" : "text-[1.65rem]",
         )}
         style={{ color: "var(--ink-hi)", transitionDuration: "var(--d-tick)" }}
       >
@@ -130,8 +143,11 @@ export function Reading({
       </span>
 
       {/* the confidence interval */}
-      <span className="relative block h-[7px] w-full min-w-[88px]" aria-hidden="true">
-        <span className="absolute inset-x-0 bottom-0 h-px" style={{ background: "var(--line-strong)" }} />
+      <span className="relative block h-[7px] w-full min-w-[92px]" aria-hidden="true">
+        <span
+          className="absolute inset-x-0 bottom-0 h-px"
+          style={{ background: "var(--line-strong)" }}
+        />
         <span
           className="absolute bottom-0 h-[7px]"
           style={{
@@ -168,7 +184,7 @@ export function Reading({
   );
 
   const buttonClass = cn(
-    "group flex cursor-pointer flex-col items-start gap-[0.28rem] text-left",
+    "group flex cursor-pointer flex-col items-start gap-[0.3rem] text-left",
     className,
   );
 

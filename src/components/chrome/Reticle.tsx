@@ -10,7 +10,9 @@ import { useMotionPrefs } from "@/components/providers/MotionPrefsProvider";
  * way a "premium" site becomes annoying, and the brief's own rule is that
  * nothing may reduce usability. Instead the cursor gains a companion: a
  * marker crosshair with a live readout that appears ONLY over surfaces
- * marked data-instrument (the globe, architecture diagrams, the rail).
+ * marked data-instrument — the chapter rail and the annotated source
+ * table. Two surfaces on the whole page, which is what keeps it a
+ * signal rather than a second cursor that follows you everywhere.
  *
  * Text does not get a reticle. Instrument surfaces do.
  *
@@ -18,7 +20,7 @@ import { useMotionPrefs } from "@/components/providers/MotionPrefsProvider";
  * there is no cursor to accompany.
  */
 export function Reticle() {
-  const { animate } = useMotionPrefs();
+  const { depth: animate } = useMotionPrefs();
   const [active, setActive] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const readoutRef = useRef<HTMLSpanElement>(null);

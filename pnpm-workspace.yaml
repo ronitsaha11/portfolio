@@ -1,2 +1,11 @@
+# Postinstall scripts are denied by default in pnpm 11. Each entry below
+# is a deliberate allow, not a blanket opt-in.
+#
+#   unrs-resolver  native binding for eslint-import-resolver-typescript.
+#                  Without it ESLint cannot resolve the `@/*` alias and
+#                  `pnpm lint` reports every internal import as unresolved.
+#   esbuild        platform binary used by scripts/verify-links.mjs to load
+#                  the TypeScript data layer without a build step.
 allowBuilds:
-  esbuild: set this to true or false
+  unrs-resolver: true
+  esbuild: true

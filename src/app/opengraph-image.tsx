@@ -10,7 +10,7 @@ export const alt = `${site.name} — ${site.concept}`;
    child, so every div below sets it rather than relying on a default. */
 export default function OpengraphImage() {
   const stats: [string, number][] = [
-    ["SCENES", registry.scenes],
+    ["SYSTEMS", registry.scenes],
     ["READINGS", registry.readings],
     ["GROUND SAMPLES", registry.samples],
   ];
@@ -24,7 +24,7 @@ export default function OpengraphImage() {
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          backgroundColor: "#0E1213",
+          backgroundColor: "#0B0E0F",
           padding: 72,
           fontFamily: "sans-serif",
         }}

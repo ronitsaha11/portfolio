@@ -2,15 +2,21 @@ import type { Scene } from "../types";
 
 const REPO = "https://github.com/Somnath29/EcoShare";
 const BLOB = `${REPO}/blob/main`;
-const M = "2026-08-27";
+const M = "2026-09-20";
 
 export const ecoshare: Scene = {
   slug: "ecoshare",
-  sceneNumber: 4,
+  sceneNumber: 6,
   name: "EcoShare",
   subtitle: "Surplus food redistribution · team project",
+  category: "Full-stack · Team",
+  tier: "supporting",
   oneLiner:
-    "Eight commits inside a three-person codebase: the surplus-food endpoints, the model and validators, the dashboard integration and the deploy config.",
+    "Eight commits inside a four-person codebase: the surplus-food endpoints, the model and validators, the dashboard integration and the deploy config.",
+
+  status:
+    "Deployed on Vercel and publicly reachable — the only project here that is. A four-person build; eight of fifty commits are mine."
+,
 
   problem:
     "University kitchens throw away food that NGOs and students would take, and the gap is logistical rather than moral — surplus appears with a few hours of usable life, and whoever can collect it needs to know before it expires. The system has to model a listing that is time-bounded and claimable exactly once.",
@@ -30,7 +36,7 @@ export const ecoshare: Scene = {
     "One of my commits added eight ad-hoc debugging scripts to the repository root that should have been cleaned up before pushing, and my commit messages here are well below the standard I set on TerraMind. Both are visible in the history and neither is defensible.",
 
   ownership:
-    "Team project, 8 of 49 commits. The listing endpoints, Food model, validators, dashboard integration and deploy config are mine; the application as a whole is not.",
+    "Team project, 8 of 50 commits. The listing endpoints, Food model, validators, dashboard integration and deploy config are mine; the application as a whole is not.",
 
   stack: ["TypeScript", "Express", "MongoDB", "React", "JWT", "Vercel"],
 
@@ -65,13 +71,31 @@ export const ecoshare: Scene = {
     },
   ],
 
+  signature: {
+    formation: "mesh",
+    ramp: 2,
+    nodes: 90,
+    stages: [
+      { id: "kitchen", label: "Kitchen", note: "Surplus appears with a few hours of usable life." },
+      { id: "listing", label: "Listing", note: "Mine. The Food model, its shared types and the request validators." },
+      {
+        id: "reserve",
+        label: "Reservation",
+        note: "The invariant. A listing can be claimed by exactly one party — two NGOs must never both be told they have it.",
+        boundary: true,
+      },
+      { id: "ngo", label: "NGO", note: "Mine. The dashboard and the frontend API service that consumes it." },
+      { id: "deploy", label: "Deployed", note: "Mine. The SPA routing config that got the frontend live." },
+    ],
+  },
+
   readings: [
     {
       id: "es-commits",
-      value: "8 / 49",
+      value: "8 / 50",
       label: "Commits · attributed",
       detail:
-        "Eight of forty-nine commits are mine. The interval stays wide because the ownership genuinely is partial.",
+        "Eight of fifty commits are mine, alongside Somnath29, Harshakondipati and one more. The interval stays wide because the ownership genuinely is partial.",
       confidence: "attributed",
       samples: [
         { label: "My commits, filtered", href: `${REPO}/commits/main?author=ronitsaha11`, kind: "commit", measuredAt: M },

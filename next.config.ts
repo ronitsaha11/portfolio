@@ -1,14 +1,14 @@
-import createMDX from "@next/mdx";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  pageExtensions: ["ts", "tsx", "mdx"],
   reactStrictMode: true,
   poweredByHeader: false,
   experimental: {
-    // Tree-shakes motion's barrel export; without it the whole library
-    // lands in the first-load chunk.
-    optimizePackageImports: ["motion", "@radix-ui/react-popover"],
+    // Tree-shakes the barrel exports that would otherwise land whole in
+    // the first-load chunk. anime.js ships one entry re-exporting every
+    // module, so this is the difference between the timeline engine and
+    // the entire library.
+    optimizePackageImports: ["animejs", "@radix-ui/react-popover", "@react-three/drei"],
     // The stylesheet was the single largest render-blocking request.
     // Inlining removes that round trip before first paint entirely.
     inlineCss: true,
@@ -30,6 +30,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withMDX = createMDX({});
-
-export default withMDX(nextConfig);
+export default nextConfig;

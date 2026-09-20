@@ -1,9 +1,20 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 /* ============================================================
-   GROUND TRUTH — design tokens (Phase 2 §03–§09)
-   Day pass is the default. Night pass is a second design,
-   not an inversion. Nothing below is set anywhere else.
+   GROUND TRUTH — design tokens
+
+   Tokens live here and nowhere else. A component reads a token;
+   it never writes a colour, a duration or an easing curve.
+
+   Day pass is the default; night pass is a second design rather
+   than an inversion. Reduced motion zeroes every duration at the
+   token level, so a component cannot opt out by accident.
+
+   COLOUR VALUES ARE LOAD-BEARING. Every ink and accent value
+   below was chosen by computing its contrast ratio against its
+   own ground, not by eye, and the ratios are recorded beside
+   them. The visual language changed in this redesign; these
+   numbers deliberately did not.
    ============================================================ */
 
 @theme {
@@ -15,152 +26,104 @@
   --text-legend: 0.66rem;
   --text-micro: 0.7rem;
   --text-data: 0.76rem;
-  --text-reading: 1.6rem;
 
-  --spacing-rail: 44px;
-  --spacing-page: clamp(1.1rem, 4vw, 3.5rem);
+  --spacing-rail: 52px;
+  --spacing-page: clamp(1.15rem, 4vw, 4rem);
+  /* Was 12rem at the top end. Seven editorial chapters at nearly
+     two hundred pixels of lead-in each is a screen and a half of
+     nothing across the page. */
+  --spacing-chapter: clamp(4rem, 10vw, 9rem);
 }
 
 :root {
-  /* substrate — bone, the colour of a survey contact sheet */
-  --bg-0: #f3f2ed;
-  --bg-1: #fafaf7;
-  --bg-2: #eae9e2;
-  --bg-3: #ffffff;
+  /* substrate — one palette.
+     There is no light pass. A second full design is a second full set
+     of contrast decisions to keep true, and the lattice behind the page
+     only really works against a ground darker than anything drawn on
+     it. One ground, verified once. */
+  --bg-0: #0b0e0f;
+  --bg-1: #12181a;
+  --bg-2: #171f21;
+  --bg-3: #1c2628;
+  /* a wash used to sink a band below the ground without a border */
+  --bg-sunk: #080b0c;
 
-  /* ink — graphite with a green-grey bias, never pure black */
-  /* Every value below is measured against --bg-0 for WCAG AA at small
-     text (4.5:1). --ink-lo carries the 0.66rem legends, which is the
-     smallest type on the site, so it is the tightest constraint. */
-  --ink-hi: #14181a; /* 15.94:1 */
-  --ink-md: #4b5355; /* 7.02:1  */
-  --ink-lo: #656d6f; /* 4.72:1  */
+  /* ink — off-white with a green-grey bias, never pure white.
+     Ratios below are the WORST case across every ground each ink
+     appears on (bg-0 through bg-3), not just against the page ground.
+     Measuring against bg-0 alone hid a real AA failure: --ink-lo was
+     4.90:1 there and 4.35:1 on bg-2, which is exactly where the
+     annotated source table puts its line numbers. */
+  --ink-hi: #e8ebe8; /* 12.88:1 worst case */
+  --ink-md: #a3adac; /*  6.73:1 worst case */
+  --ink-lo: #879191; /*  4.78:1 worst case, on bg-3 */
 
   /* line */
-  --line: rgba(20, 24, 26, 0.13);
-  --line-strong: rgba(20, 24, 26, 0.3);
-  --graticule: rgba(20, 24, 26, 0.055);
+  --line: rgba(232, 235, 232, 0.14);
+  --line-strong: rgba(232, 235, 232, 0.3);
+  --line-hair: rgba(232, 235, 232, 0.07);
+  --graticule: rgba(232, 235, 232, 0.045);
 
-  /* marker — the one accent. registration marks, active contour,
-     primary action, live link. nowhere else. */
-  /* 4.66:1 as link text on bone, and 5.22:1 for white on it as a button
-     ground — the brighter #D64A16 failed both at 3.86 and 4.33. */
-  --mark: #bf430e;
-  --mark-hi: #a63808;
-  --mark-dim: rgba(191, 67, 14, 0.1);
-  --mark-line: rgba(191, 67, 14, 0.34);
-  --mark-on: #ffffff;
+  /* marker — the one accent. registration marks, active chapter,
+     primary action, live link. nowhere else.
+     5.45:1 worst case as link text, and 5.45:1 for the ink on it as a
+     button ground. */
+  --mark: #ff6b33;
+  --mark-hi: #ff8b5e;
+  --mark-dim: rgba(255, 107, 51, 0.13);
+  --mark-line: rgba(255, 107, 51, 0.4);
+  --mark-on: #14181a;
 
   /* elevation ramp — encodes a value or it does not appear */
-  --el-0: #0b5f5c;
-  --el-1: #3e8a6e;
-  --el-2: #8ca86a;
-  --el-3: #c9a24b;
-  --el-4: #b07a34;
+  --el-0: #2fa9a2;
+  --el-1: #5fbe8e;
+  --el-2: #a8c77c;
+  --el-3: #e0bc5c;
+  --el-4: #d9954a;
 
   /* state */
-  --measured: #0b5f5c; /* 6.68:1 */
-  --measured-bg: rgba(11, 95, 92, 0.1);
-  --attributed: #8a5e1f; /* 5.06:1 — #B07A34 failed at 3.30 */
-  --attributed-bg: rgba(138, 94, 31, 0.12);
-  --archived: #656d6f; /* 4.72:1 */
-  --archived-bg: rgba(101, 109, 111, 0.12);
+  --measured: #3fbfa6; /* 6.79:1 worst case */
+  --measured-bg: rgba(63, 191, 166, 0.13);
+  --attributed: #e0ae5c; /* 7.65:1 worst case */
+  --attributed-bg: rgba(224, 174, 92, 0.14);
+  --archived: #8f9998; /* 5.29:1 worst case */
+  --archived-bg: rgba(138, 148, 147, 0.14);
 
-  /* depth — day light falls from above; shadows short and dry */
-  --lift-1: 0 1px 0 rgba(20, 24, 26, 0.05), 0 1px 2px rgba(20, 24, 26, 0.05);
-  --lift-2: 0 1px 0 rgba(20, 24, 26, 0.04), 0 10px 24px -14px rgba(20, 24, 26, 0.28);
-  --lift-3: 0 24px 60px -30px rgba(20, 24, 26, 0.42);
-  --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  /* The lattice reads these, so the 3D follows the design tokens
+     rather than being a second palette that drifts out of step.
+     They are NOT the ink values: the lattice sits behind body copy,
+     and a node the same weight as the text in front of it is noise. */
+  --lattice-node: #8e9a9a;
+  --lattice-edge: #596466;
 
-  /* motion — five verbs (Phase 2 §07) */
+  /* depth — shadows are long and soft against a dark ground */
+  --lift-1: 0 1px 0 rgba(0, 0, 0, 0.4);
+  --lift-2: 0 1px 0 rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
+  --lift-3: 0 28px 70px -32px rgba(0, 0, 0, 0.9);
+  --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+
+  /* motion — the mirror of lib/motion/tokens.ts. The two must match:
+     a CSS transition and a JS tween on the same element that disagree
+     is the most irritating class of animation bug there is. */
   --d-tick: 100ms;
-  --d-ui: 200ms;
-  --d-measure: 420ms;
-  --d-sweep: 700ms;
+  --d-ui: 340ms;
+  --d-measure: 620ms;
+  --d-sweep: 850ms;
   --d-pass: 1100ms;
   --e-settle: cubic-bezier(0.16, 1, 0.3, 1);
   --e-swap: cubic-bezier(0.65, 0, 0.35, 1);
   --e-instr: cubic-bezier(0.4, 0, 0.1, 1);
 
   /* layout */
-  --measure: 66ch;
-  --content-max: 1180px;
+  --measure: 64ch;
+  --measure-tight: 52ch;
+  --content-max: 1240px;
 
-  color-scheme: light;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg-0: #0e1213;
-    --bg-1: #141a1b;
-    --bg-2: #1a2123;
-    --bg-3: #1f282a;
-    --ink-hi: #e8ebe8;
-    --ink-md: #a3adac;
-    --ink-lo: #7a8484; /* 4.90:1 on night ground */
-    --line: rgba(232, 235, 232, 0.14);
-    --line-strong: rgba(232, 235, 232, 0.3);
-    --graticule: rgba(232, 235, 232, 0.055);
-    --mark: #ff6b33;
-    --mark-hi: #ff8b5e;
-    --mark-dim: rgba(255, 107, 51, 0.13);
-    --mark-line: rgba(255, 107, 51, 0.4);
-    --mark-on: #14181a;
-    --el-0: #2fa9a2;
-    --el-1: #5fbe8e;
-    --el-2: #a8c77c;
-    --el-3: #e0bc5c;
-    --el-4: #d9954a;
-    --measured: #3fbfa6;
-    --measured-bg: rgba(63, 191, 166, 0.13);
-    --attributed: #e0ae5c;
-    --attributed-bg: rgba(224, 174, 92, 0.14);
-    --archived: #8a9493;
-    --archived-bg: rgba(138, 148, 147, 0.14);
-    --lift-1: 0 1px 0 rgba(0, 0, 0, 0.4);
-    --lift-2: 0 1px 0 rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-    --lift-3: 0 28px 70px -32px rgba(0, 0, 0, 0.9);
-    --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
-    color-scheme: dark;
-  }
-}
-
-:root[data-theme="dark"] {
-  --bg-0: #0e1213;
-  --bg-1: #141a1b;
-  --bg-2: #1a2123;
-  --bg-3: #1f282a;
-  --ink-hi: #e8ebe8;
-  --ink-md: #a3adac;
-  --ink-lo: #7a8484; /* 4.90:1 on night ground */
-  --line: rgba(232, 235, 232, 0.14);
-  --line-strong: rgba(232, 235, 232, 0.3);
-  --graticule: rgba(232, 235, 232, 0.055);
-  --mark: #ff6b33;
-  --mark-hi: #ff8b5e;
-  --mark-dim: rgba(255, 107, 51, 0.13);
-  --mark-line: rgba(255, 107, 51, 0.4);
-  --mark-on: #14181a;
-  --el-0: #2fa9a2;
-  --el-1: #5fbe8e;
-  --el-2: #a8c77c;
-  --el-3: #e0bc5c;
-  --el-4: #d9954a;
-  --measured: #3fbfa6;
-  --measured-bg: rgba(63, 191, 166, 0.13);
-  --attributed: #e0ae5c;
-  --attributed-bg: rgba(224, 174, 92, 0.14);
-  --archived: #8a9493;
-  --archived-bg: rgba(138, 148, 147, 0.14);
-  --lift-1: 0 1px 0 rgba(0, 0, 0, 0.4);
-  --lift-2: 0 1px 0 rgba(0, 0, 0, 0.3), 0 12px 28px -16px rgba(0, 0, 0, 0.8);
-  --lift-3: 0 28px 70px -32px rgba(0, 0, 0, 0.9);
-  --inset-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
   color-scheme: dark;
 }
 
 /* Reduced motion zeroes durations at the token level, so a component
-   cannot opt out by accident (Phase 2 §07). */
+   cannot opt out by accident. */
 @media (prefers-reduced-motion: reduce) {
   :root {
     --d-tick: 0ms;
@@ -187,6 +150,8 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  /* Anchors land below the fixed masthead rather than under it. */
+  scroll-padding-top: 88px;
 }
 
 body {
@@ -195,14 +160,16 @@ body {
   color: var(--ink-hi);
   font-family: var(--font-body);
   font-size: 16.5px;
-  line-height: 1.62;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  /* the graticule: the page is registered to a survey grid */
+  /* The register: a single hairline grid, finer and quieter than the
+     old 48px graticule, because there is now a 3D lattice behind the
+     page and two competing grids read as noise. */
   background-image:
     linear-gradient(var(--graticule) 1px, transparent 1px),
     linear-gradient(90deg, var(--graticule) 1px, transparent 1px);
-  background-size: 48px 48px;
+  background-size: 72px 72px;
 }
 
 ::selection {
@@ -216,29 +183,56 @@ body {
   border-radius: 2px;
 }
 
-a {
-  color: var(--mark);
-  text-underline-offset: 2px;
-  text-decoration-thickness: 1px;
+/* ELEMENT DEFAULTS GO IN `base`, AND THE REASON IS NOT TIDINESS.
+   Tailwind v4 emits its utilities inside `@layer utilities`, and an
+   UNLAYERED rule beats every layered one no matter how weak its
+   selector. Written outside a layer, `a { color: … }` therefore
+   overrides `text-[var(--mark-on)]` on an anchor — which is exactly
+   what happened here: every primary link-button rendered the accent
+   on the accent, and its label was invisible until a contrast audit
+   found it. The same trap applies to `svg { height: auto }` against a
+   height utility. */
+@layer base {
+  a {
+    color: var(--mark);
+    text-underline-offset: 2px;
+    text-decoration-thickness: 1px;
+  }
+
+  img,
+  svg,
+  video {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
 }
 
-img,
-svg,
-video {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
+/* ---------------- type roles ----------------
 
-/* ---------------- type roles (Phase 2 §04) ---------------- */
+   Five sizes and one device, with deliberate jumps between them.
+   The width axis on Archivo does the work a second family usually
+   does: wide + tiny is a map legend, narrow + huge is a headline,
+   and the reader reads the difference as hierarchy without being
+   told. `wdth` is why the variable font is worth its weight. */
 
-.t-hero {
+.t-display {
   font-family: var(--font-display);
-  font-variation-settings: "wdth" 96;
+  font-variation-settings: "wdth" 86;
   font-weight: 900;
-  font-size: clamp(2.6rem, 8vw, 5.6rem);
-  letter-spacing: -0.035em;
-  line-height: 0.9;
+  font-size: clamp(3rem, 12vw, 9rem);
+  letter-spacing: -0.042em;
+  line-height: 0.84;
+  text-wrap: balance;
+}
+
+.t-chapter {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 88;
+  font-weight: 800;
+  font-size: clamp(2rem, 5.5vw, 3.8rem);
+  letter-spacing: -0.032em;
+  line-height: 0.94;
   text-wrap: balance;
 }
 
@@ -246,7 +240,7 @@ video {
   font-family: var(--font-display);
   font-variation-settings: "wdth" 84;
   font-weight: 800;
-  font-size: clamp(1.9rem, 4.5vw, 3.2rem);
+  font-size: clamp(1.9rem, 4.5vw, 3.1rem);
   letter-spacing: -0.03em;
   line-height: 0.98;
   text-wrap: balance;
@@ -256,18 +250,18 @@ video {
   font-family: var(--font-display);
   font-variation-settings: "wdth" 108;
   font-weight: 700;
-  font-size: clamp(1.4rem, 3vw, 1.9rem);
+  font-size: clamp(1.35rem, 2.8vw, 1.8rem);
   letter-spacing: -0.012em;
-  line-height: 1.06;
+  line-height: 1.08;
 }
 
 .t-sub {
   font-family: var(--font-display);
   font-variation-settings: "wdth" 104;
   font-weight: 700;
-  font-size: 1.12rem;
+  font-size: 1.1rem;
   letter-spacing: -0.004em;
-  line-height: 1.25;
+  line-height: 1.28;
 }
 
 /* wide + tiny = map legend. the width device. */
@@ -285,11 +279,53 @@ video {
   font-variant-numeric: tabular-nums;
 }
 
+/* The station numeral. Big, thin, and set in the margin — the one
+   piece of pure typographic scale on the page. */
+.t-station {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: clamp(2.6rem, 7vw, 4.6rem);
+  font-weight: 300;
+  line-height: 0.8;
+  letter-spacing: -0.04em;
+  color: var(--line-strong);
+}
+
+.t-lede {
+  font-size: clamp(1.05rem, 1.9vw, 1.3rem);
+  line-height: 1.5;
+  color: var(--ink-md);
+  text-wrap: pretty;
+}
+
+/* Vertical rhythm between siblings.
+   Tailwind's preflight zeroes every margin, which is right for a design
+   system and wrong for running prose — two <p>s in a row become one
+   block of text. This restores the gap in one place rather than every
+   paragraph carrying a margin utility, and it uses `* + *` so the first
+   child never adds space above itself. */
+.flow > * + * {
+  margin-top: 1.05em;
+}
+
+.flow-tight > * + * {
+  margin-top: 0.6em;
+}
+
 .measure {
   max-width: var(--measure);
 }
 
-/* ---------------- the plate (Phase 2 §06) ---------------- */
+.measure-tight {
+  max-width: var(--measure-tight);
+}
+
+/* ---------------- surfaces ----------------
+
+   One raised surface, used sparingly. The registration marks are
+   the fiducials on an aerial survey frame; they are the reason a
+   plate reads as a captured frame rather than as a card, and they
+   are why this site does not need rounded corners to feel built. */
 
 .plate {
   position: relative;
@@ -298,7 +334,6 @@ video {
   box-shadow: var(--lift-2), var(--inset-edge);
 }
 
-/* registration marks — the fiducials on an aerial survey frame */
 .plate::before,
 .plate::after {
   content: "";
@@ -322,6 +357,80 @@ video {
   border-right: 1.5px solid var(--mark);
 }
 
+/* A flat panel: the common case. No shadow, no fiducials — a hairline
+   and a ground shift, which is enough when the page has a grid. */
+.panel {
+  background: var(--bg-1);
+  border: 1px solid var(--line);
+}
+
+/* A hairline grid of panels, drawn with a 1px gap over a line-coloured
+   ground so each cell composites independently. */
+.grid-hair {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.grid-hair > * {
+  background: var(--bg-1);
+}
+
+/* ---------------- microinteraction ----------------
+
+   THE SHEEN. A tilt on its own is a rotation, and a rotation without
+   a highlight reads as a picture being turned rather than as a plate
+   catching the light. One radial gradient, positioned from the same
+   pointer coordinates the rotation uses, is what makes the surface
+   have a plane. It is drawn over the cell and under the text, and it
+   costs one compositing layer only while the pointer is on it. */
+
+.tilt {
+  position: relative;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.tilt::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--sheen, 0);
+  transition: opacity var(--d-ui) var(--e-settle);
+  background: radial-gradient(
+    420px circle at var(--sheen-x, 50%) var(--sheen-y, 50%),
+    color-mix(in srgb, var(--ink-hi) 7%, transparent),
+    transparent 62%
+  );
+}
+
+/* A link that says which way it goes. The rule grows from the edge the
+   pointer is arriving at rather than from the middle, which is the
+   difference between an underline and an underline that was drawn. */
+.rule-in {
+  position: relative;
+}
+
+.rule-in::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--d-ui) var(--e-settle);
+}
+
+.rule-in:hover::after,
+.rule-in:focus-visible::after {
+  transform: scaleX(1);
+}
+
 /* ---------------- utilities ---------------- */
 
 .skip-link {
@@ -343,29 +452,53 @@ video {
   top: 0.5rem;
 }
 
-/* PASS — the day/night terminator. The two frames are stacked rather
-   than cross-faded so the sweep reads as an edge crossing the page
-   instead of a dissolve. */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+/* The content column sits above the lattice. One stacking context,
+   declared once, rather than a z-index on every section. */
+.above-lattice {
+  position: relative;
+  z-index: 10;
 }
 
-::view-transition-old(root) {
-  z-index: 1;
+/* ---------------- text over the lattice ----------------
+
+   THE LEGIBILITY HALO. The lattice is a live, additive WebGL scene
+   directly behind the running text, and a bright accent node landing
+   under a glyph raises the local ground and eats the contrast the
+   tokens were chosen for.
+
+   There are two ways out. One is to dim the scene everywhere text
+   might be, which on a phone means dimming it everywhere — and that
+   is how the first pass ended up with a page that was accessible and
+   dead. The other is to give the type its own ground, which is what
+   this does: a soft halo in the page ground colour, invisible against
+   a flat background, and worth several points of contrast under a
+   node. It inherits, so it is declared twice rather than on forty
+   selectors.
+
+   Opaque surfaces switch it off. Nothing is behind them. */
+main,
+footer {
+  /* One shadow, not two. A second pass at a 26px blur doubled the
+     paint cost of every glyph on a very long document for a
+     difference that could not be seen side by side. */
+  text-shadow: 0 0 12px var(--bg-0);
 }
 
-::view-transition-new(root) {
-  z-index: 2;
+.panel,
+.plate,
+.grid-hair > * {
+  text-shadow: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) {
-    animation: none !important;
-  }
+/* Where text crosses the lattice, it needs its own ground or the
+   nodes read through the descenders. Cheap, and only where used. */
+.on-lattice {
+  background:
+    radial-gradient(
+      120% 100% at 0% 50%,
+      color-mix(in srgb, var(--bg-0) 92%, transparent) 55%,
+      transparent 100%
+    );
 }
 
 @keyframes gt-pop-in {
@@ -376,5 +509,576 @@ video {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+@keyframes gt-command-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.972);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes gt-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ============================================================
+   THE CASE STUDY: ONE DOCUMENT, TWO LAYOUTS
+
+   A case study is a tall section with one `position: sticky`
+   child. Nothing here hijacks the scroll: the wheel, the
+   trackpad, the scrollbar, Page Down, Home, End, a touch flick
+   and a screen reader's virtual cursor all behave exactly as
+   they do anywhere else on the page. The section is simply long,
+   and which act it shows depends on how far into it you are.
+
+   THE DEFAULT IS THE DOCUMENT. Everything in the first half of
+   this block is the case study as ordinary flowing prose: every
+   act in order, every note inline beside the stage it describes,
+   no fixed heights and no state. That is what a reader gets with
+   JavaScript off and what a reader gets with reduced motion on.
+
+   THE PACED LAYOUT IS OPT-IN, via `html[data-motion="on"]`,
+   which a four-line inline script in the document head sets
+   before the first paint. Deciding it there rather than in a
+   React effect is the difference between one layout pass and
+   two: the first version of this flipped a mode after hydration,
+   and rebuilding every case study one frame after building it
+   cost 1.9 s of total blocking time.
+
+   THE HEIGHT IS DERIVED, NOT TYPED. `--beats` comes from the act
+   plan, which counts what the project actually contains, so a
+   twelve-stage pipeline is physically longer to scroll than a
+   five-stage mesh without anyone choosing a number of viewport
+   heights.
+   ============================================================ */
+
+:root {
+  /* One beat is one thing to look at.
+     A quarter of a viewport is enough travel for an element to
+     arrive and settle at reading speed. It was a third, which put
+     the six case studies at thirty thousand pixels between them and
+     left long stretches where the only thing changing was the
+     camera. A whole viewport per beat would make a twelve-stage
+     pipeline twelve screens long on its own. */
+  --act-beat: 26svh;
+  --act-beat-support: 22svh;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --act-beat: 20svh;
+    --act-beat-support: 17svh;
+  }
+}
+
+/* ---------------- the document layout ---------------- */
+
+.scene-track {
+  position: relative;
+  padding-top: var(--spacing-chapter);
+}
+
+.scene-col {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+}
+
+.scene-head {
+  flex: none;
+  margin-bottom: clamp(1rem, 2.6svh, 1.9rem);
+}
+
+.scene-head-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+}
+
+.scene-number {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--mark);
+}
+
+.scene-name {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 104;
+  font-weight: 800;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+  color: var(--ink-hi);
+}
+
+/* The act readout and the progress rule describe a position the
+   document layout does not have. */
+.scene-readout,
+.scene-bar {
+  display: none;
+}
+
+.scene-act + .scene-act {
+  margin-top: clamp(3rem, 7vw, 5rem);
+}
+
+.scene-acts {
+  position: relative;
+}
+
+/* ---------------- the ladder ----------------
+
+   Shared by both layouts. A rung is one thing the reader walks
+   past; its detail sits inside it in the DOM so a screen reader
+   hears the two together. */
+
+.act-walk {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.act-ladder {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Fixed first two columns, not `auto`. The spine below is drawn at a
+   computed x, and a spine that misses the marks by two pixels looks
+   like a rendering fault rather than a connector. */
+.act-rung {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.6rem 20px auto 1fr;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.26rem 0;
+  border-bottom: 1px solid var(--line-hair);
+}
+
+.act-rung-index {
+  font-size: 0.64rem;
+  color: var(--ink-lo);
+}
+
+.act-rung-mark {
+  justify-self: center;
+  width: 8px;
+  height: 8px;
+  border: 1.5px solid var(--line-strong);
+  border-radius: 50%;
+}
+
+.act-rung-mark[data-gate] {
+  background: var(--mark);
+  border-color: var(--mark);
+  border-radius: 0;
+  transform: rotate(45deg);
+}
+
+.act-rung-depth {
+  justify-self: center;
+  width: 20px;
+  height: 3px;
+}
+
+/* THE SPINE.
+
+   A list of layers says what the parts are. A list of layers joined
+   by a line says a request DESCENDS through them, which is the claim
+   the architecture act is actually making and the one thing the
+   ladder was not saying on its own.
+
+   One line for the whole ladder rather than a segment per rung: the
+   segments version had to guess the gap between two marks from the
+   row height, and a connector that stops short of its nodes reads as
+   a rendering fault. The insets are half a rung, so it starts at the
+   first mark and ends at the last. Its x is why the first two grid
+   columns are fixed widths. */
+.act-ladder-joined {
+  position: relative;
+}
+
+.act-ladder-joined::before {
+  content: "";
+  position: absolute;
+  left: calc(1.6rem + 0.6rem + 10px);
+  top: 0.85rem;
+  bottom: 0.85rem;
+  width: 1px;
+  transform: translateX(-50%);
+  background: var(--line-strong);
+}
+
+.act-rung-label {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" 104;
+  font-weight: 700;
+  font-size: 0.88rem;
+  color: var(--ink-hi);
+}
+
+.act-rung-badge {
+  justify-self: start;
+  color: var(--mark);
+  background: var(--mark-dim);
+  padding: 0.05rem 0.35rem;
+}
+
+/* In the document layout the detail is simply the second line of
+   its own rung. */
+.act-rung-detail {
+  grid-column: 1 / -1;
+  max-width: 58ch;
+  padding-bottom: 0.4rem;
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--ink-md);
+}
+
+.act-slot {
+  display: none;
+}
+
+.act-readings {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+/* ---------------- end matter ---------------- */
+
+.scene-record {
+  padding-top: clamp(2rem, 4.5vw, 3.2rem);
+  padding-bottom: clamp(2rem, 5vw, 3.6rem);
+  /* Six of these, each a stack of collapsed decision records, and
+     at most one is ever on screen. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 520px;
+}
+
+.scene-record-inner {
+  border-top: 1px solid var(--line);
+  padding-top: 1.7rem;
+}
+
+.scene-jump {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 1.7rem;
+}
+
+.scene-jump-links {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.scene-jump-link {
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  color: var(--mark);
+}
+
+/* ============================================================
+   THE PACED LAYOUT
+   ============================================================ */
+
+html[data-motion="on"] .scene-track {
+  padding-top: 0;
+  height: calc(100svh + var(--beats) * var(--act-beat));
+}
+
+html[data-motion="on"] .scene-track[data-tier="supporting"] {
+  height: calc(100svh + var(--beats) * var(--act-beat-support));
+}
+
+html[data-motion="on"] .scene-pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  display: flex;
+  align-items: stretch;
+}
+
+/* Text on the left, the system on the right. The column is
+   narrower than the editorial measure because the right half of
+   the frame is where the lattice is, and the corridor follows
+   this element rather than the page default while the scene owns
+   the viewport. */
+html[data-motion="on"] .scene-col {
+  max-width: min(44rem, 52vw);
+  margin-inline: 0;
+  height: 100svh;
+  display: flex;
+  flex-direction: column;
+  padding-block: clamp(4.6rem, 10svh, 6.4rem) clamp(1.5rem, 4svh, 2.6rem);
+}
+
+@media (max-width: 1023px) {
+  html[data-motion="on"] .scene-col {
+    max-width: none;
+  }
+}
+
+html[data-motion="on"] .scene-readout {
+  margin-left: auto;
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.scene-act-label {
+  color: var(--ink-hi);
+}
+
+.scene-act-count {
+  font-size: 0.68rem;
+  color: var(--ink-lo);
+}
+
+html[data-motion="on"] .scene-bar {
+  display: block;
+  margin-top: 0.5rem;
+  height: 1.5px;
+  background: var(--line);
+}
+
+.scene-bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--mark);
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+/* Instrumentation, not a dashboard. Two readings: which part of the
+   system the walk is on, and how far through the case study you are.
+   Both are blank or zero rather than stale — a readout showing the
+   previous act is worse than an empty one. */
+.scene-hud {
+  display: none;
+}
+
+html[data-motion="on"] .scene-hud {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.42rem;
+  min-height: 0.95rem;
+}
+
+.scene-hud-label {
+  color: var(--mark);
+  transition: opacity var(--d-ui) var(--e-settle);
+}
+
+.scene-hud-pct {
+  font-size: 0.64rem;
+  color: var(--ink-lo);
+  font-variant-numeric: tabular-nums;
+}
+
+html[data-motion="on"] .scene-acts {
+  flex: 1;
+  min-height: 0;
+}
+
+html[data-motion="on"] .scene-act {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  opacity: 0;
+  pointer-events: none;
+  margin-top: 0;
+  /* Centred in the frame rather than hung from the head. An act is
+     a shot, and a shot with its subject pinned to the top edge and
+     two hundred pixels of nothing under it is a mistake, not a
+     composition. The head stays where it is; only the act moves. */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Forty-two of these exist and at most three are ever on screen.
+     Containment keeps a change inside one act from costing a style
+     and layout pass over the other forty-one, and `auto` lets the
+     browser skip rendering the ones that are nowhere near the
+     viewport — without taking them out of the accessibility tree,
+     which is what `visibility: hidden` would do. No `will-change`
+     here: the stage sets it on the two or three that are actually
+     moving and clears it again, rather than asking for forty-two
+     compositing layers. */
+  contain: layout paint;
+  content-visibility: auto;
+}
+
+html[data-motion="on"] .scene-act:first-child {
+  opacity: 1;
+}
+
+/* ---------------- sub-steps ----------------
+
+   An act marks the things the reader walks through with
+   `data-item`; the stage writes `data-state` onto them when the
+   step changes — a handful of attribute writes per act, never per
+   frame — and everything below is CSS. */
+
+html[data-motion="on"] .act-item {
+  transition:
+    opacity var(--d-ui) var(--e-settle),
+    transform var(--d-ui) var(--e-settle);
+}
+
+html[data-motion="on"] .act-item[data-state="past"] {
+  opacity: 0.34;
+}
+
+html[data-motion="on"] .act-item[data-state="future"] {
+  opacity: 0.16;
+  transform: translateY(5px);
+}
+
+html[data-motion="on"] .act-item[data-state="current"] {
+  opacity: 1;
+  transform: none;
+}
+
+html[data-motion="on"] .act-rung[data-state="current"] .act-rung-label {
+  color: var(--mark);
+}
+
+html[data-motion="on"] .act-reading[data-state="past"],
+html[data-motion="on"] .act-reading[data-state="future"] {
+  opacity: 0.24;
+}
+
+/* A stack: sub-steps that take the whole frame in turn, used where
+   three paragraphs would not fit one above another. */
+html[data-motion="on"] .act-stack {
+  position: relative;
+  min-height: 17rem;
+}
+
+html[data-motion="on"] .act-stack > .act-item {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+}
+
+html[data-motion="on"] .act-stack > .act-item[data-state="current"],
+html[data-motion="on"] .act-stack > .act-item:first-child:not([data-state]) {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+html[data-motion="on"] .act-invariant {
+  border-block: 1px solid var(--line);
+  padding-block: 1.25rem;
+}
+
+/* The detail leaves the visual flow and is shown large in the slot
+   instead — but it stays in the accessibility tree, attached to
+   its own rung, which is where it belongs. */
+html[data-motion="on"] .act-rung-detail {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+html[data-motion="on"] .act-slot {
+  display: block;
+  position: relative;
+  margin-top: 1.1rem;
+  min-height: 6.5rem;
+}
+
+html[data-motion="on"] .act-slot-note {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  opacity: 0;
+  max-width: 56ch;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--ink-md);
+  transition: opacity var(--d-ui) var(--e-settle);
+}
+
+html[data-motion="on"] .act-slot-note[data-state="current"] {
+  opacity: 1;
+}
+
+/* Short viewports: the frame has less room, so the running copy
+   steps down rather than being clipped. */
+@media (max-height: 760px) and (min-width: 768px) {
+  html[data-motion="on"] .scene-act {
+    font-size: 0.94em;
+  }
+  html[data-motion="on"] .act-slot {
+    min-height: 5.5rem;
+  }
+}
+
+/* Belt and braces. The attribute is set before the first paint and
+   removed again if the reader turns reduced motion on mid-session,
+   but a media query is the one statement of this that cannot be
+   out of date. */
+@media (prefers-reduced-motion: reduce) {
+  html[data-motion="on"] .scene-track {
+    height: auto !important;
+    padding-top: var(--spacing-chapter) !important;
+  }
+  html[data-motion="on"] .scene-pin {
+    position: static !important;
+    height: auto !important;
+  }
+  html[data-motion="on"] .scene-col {
+    height: auto !important;
+    max-width: var(--content-max) !important;
+    margin-inline: auto !important;
+  }
+  html[data-motion="on"] .scene-act,
+  html[data-motion="on"] .act-stack > .act-item {
+    position: static !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+    content-visibility: visible !important;
+  }
+  html[data-motion="on"] .act-rung-detail {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    clip-path: none !important;
+    white-space: normal !important;
+  }
+  html[data-motion="on"] .act-slot,
+  html[data-motion="on"] .scene-readout,
+  html[data-motion="on"] .scene-bar {
+    display: none !important;
   }
 }

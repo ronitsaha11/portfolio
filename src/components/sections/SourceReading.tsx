@@ -1,55 +1,46 @@
-﻿"use client";
+"use client";
 
-import { Depth3D } from "@/components/primitives/Depth3D";
-import { motion } from "motion/react";
-import { Section } from "@/components/layout/Section";
+import { Chapter } from "@/components/layout/Chapter";
 import { Reveal } from "@/components/primitives/Reveal";
+import { Stagger } from "@/components/primitives/Stagger";
 import { Legend } from "@/components/primitives/Legend";
 import { LinkButton } from "@/components/primitives/Button";
-import { DUR, EASE } from "@/lib/motion";
-import { useMotionPrefs } from "@/components/providers/MotionPrefsProvider";
 import { terramindSource } from "@/data/scenes";
 
 /**
- * Thirty seconds of a real file, annotated, proves more engineering depth
- * than any skills grid. This is the section no template portfolio has,
- * because it requires the code to actually be defensible.
+ * Thirty seconds of a real file, annotated.
  *
- * The code arrives first and the annotations follow, line by line — the
- * order someone reads a file when it is being explained to them. The code
- * itself is never animated away from: it is present in the SSR output and
- * only the notes fade in beside it.
+ * This is the section no template portfolio has, because it requires
+ * the code to actually be defensible — and it requires the excerpt to
+ * match the file. An earlier version of this page did not: the line
+ * numbers were written from memory and every one was wrong, the guard
+ * clauses were missing, and it described seven repositories where the
+ * file constructs nine. Anyone who followed the link could see it in
+ * about four seconds. The lines below were read back out of the
+ * committed file.
  */
 export function SourceReading() {
-  const { animate } = useMotionPrefs();
-
   return (
-    <Section
+    <Chapter
       id="source"
-      station="08"
+      station="11"
       title="Reading the code"
-      lede="One real file from TerraMind, with the reasoning attached. Nothing here is simplified for the page — this is the file as it is committed."
+      lede="One real file from TerraMind, with the reasoning attached. Nothing here is simplified for the page — the line numbers are the file's own, and the link goes to the same lines."
     >
-      <Depth3D side="none" intensity={1.3}>
+      <Reveal>
         <div className="plate overflow-hidden">
           <div
             className="flex flex-wrap items-center justify-between gap-2 px-4 py-2"
             style={{ borderBottom: "1px solid var(--line)", background: "var(--bg-2)" }}
           >
-            <span className="t-mono text-[0.72rem]" style={{ color: "var(--ink-md)" }}>
+            <span className="t-mono text-[0.73rem]" style={{ color: "var(--ink-md)" }}>
               {terramindSource.path}
             </span>
             <Legend>Python · TerraMind AI</Legend>
           </div>
 
           <div className="overflow-x-auto" data-instrument="">
-            <motion.table
-              className="w-full border-collapse text-left"
-              initial={animate ? "hidden" : false}
-              whileInView="shown"
-              viewport={{ once: true, amount: 0.2 }}
-              variants={{ shown: { transition: { staggerChildren: 0.07 } } }}
-            >
+            <Stagger as="table" className="w-full border-collapse text-left">
               <caption className="sr-only">
                 Annotated source of the Unit of Work implementation
               </caption>
@@ -73,47 +64,37 @@ export function SourceReading() {
                       {line.n}
                     </th>
                     <td
-                      className="t-mono px-3 py-2 align-top text-[0.76rem] whitespace-pre"
+                      className="t-mono px-3 py-2 align-top text-[0.77rem] whitespace-pre"
                       style={{ color: "var(--ink-hi)" }}
                     >
                       {line.code}
                     </td>
                     <td
-                      className="px-3 py-2 align-top text-[0.82rem]"
+                      className="px-3 py-2 align-top text-[0.83rem]"
                       style={{ color: "var(--ink-md)", minWidth: "16rem" }}
                     >
                       {line.note ? (
-                        <motion.span
-                          className="flex gap-2"
-                          variants={{
-                            hidden: { opacity: 0, x: -6 },
-                            shown: {
-                              opacity: 1,
-                              x: 0,
-                              transition: { duration: DUR.ui, ease: EASE.settle },
-                            },
-                          }}
-                        >
+                        <span data-cell="" className="flex gap-2">
                           <span aria-hidden="true" style={{ color: "var(--mark)" }}>
                             ←
                           </span>
                           {line.note}
-                        </motion.span>
+                        </span>
                       ) : null}
                     </td>
                   </tr>
                 ))}
               </tbody>
-            </motion.table>
+            </Stagger>
           </div>
         </div>
-      </Depth3D>
+      </Reveal>
 
-      <Reveal delay={0.06} className="mt-5">
-        <LinkButton href={terramindSource.href} external rank="ghost">
+      <Reveal delay={60} className="mt-6">
+        <LinkButton href={terramindSource.href} rank="ghost">
           Read the whole file
         </LinkButton>
       </Reveal>
-    </Section>
+    </Chapter>
   );
 }
