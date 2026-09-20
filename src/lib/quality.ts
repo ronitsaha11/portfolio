@@ -83,8 +83,44 @@ export const PROFILES: Record<QualityTier, QualityProfile> = {
     nodes: 132,
     signals: 66,
     dpr: 1.35,
-    bloom: false,
-    atmosphere: false,
+    /**
+     * BOTH ON, AND THE COUNTS STAY LOW. THAT ORDER MATTERS.
+     *
+     * This tier is what every phone gets, and with these two off it
+     * was not a cheaper version of the scene, it was a different and
+     * much emptier one. Measured on the hero at 390x844 by loading
+     * the page twice, once with `?lattice=off`, and counting the
+     * pixels the scene actually changes: the phone moved 0.25% of
+     * them, a desktop on `high` moved 14%. Fifty-six times less. The
+     * page was not broken on a phone, it was blank.
+     *
+     * The two flags are doing different jobs and neither substitutes
+     * for the other. The atmosphere is what the frame is made of —
+     * without it the canvas is transparent everywhere no node
+     * happens to be, so there is no depth behind the text and the
+     * vignette has nothing to darken. The bloom is what makes a node
+     * read as light rather than as a dot. Turning on either alone
+     * recovered about a sixth of the gap; together they close it
+     * (0.25% to 6.5%).
+     *
+     * WHY THE FULL-SCREEN PASS IS AFFORDABLE HERE, OF ALL PLACES.
+     *
+     * Because the cost of a full-screen pass is the number of
+     * fragments, and a phone has very few. At `dpr: 1.35` a 390x844
+     * viewport is a 526x1139 buffer — 0.6 megapixels. A desktop on
+     * `high` at dpr 2 is 5.2, nine times more, and that is the case
+     * that has been shipping with bloom all along. Measured under a
+     * 4x CPU throttle the phone frame rate went from 165 to 159.
+     *
+     * So the economy on this tier is where it belongs: in the node
+     * and signal counts, the pixel ratio and the parallax — the
+     * things that scale with the scene — and not in switching off
+     * the two effects that are the reason it looks like anything.
+     * Compare the brief this tier is written against: a phone should
+     * get a real scene with fewer of everything, not a switch.
+     */
+    bloom: true,
+    atmosphere: true,
     // Slightly larger nodes than the balanced tier, not smaller. The
     // low tier is mostly phones, a phone is held closer than a
     // monitor, and with the camera pulled back for a portrait frame a
