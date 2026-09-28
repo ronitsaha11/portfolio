@@ -601,4 +601,4 @@ at an address that does not resolve.
 `site.resume` points at `/resume.pdf`, the file is committed, and five places read that one
 value: the hero action, the masthead, the mobile sheet, the contact section and the command
 palette. A `.pdf` href opens in its own tab wherever it appears — see `public/README.md` for why,
-and for how to serve it from somewhere else instead.
+and for how to serve it from somewhere else instead..
